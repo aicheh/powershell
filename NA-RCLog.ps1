@@ -14,8 +14,10 @@
 
     Very helpfull if you want to track a specific receive connector activity for example, specially when you deal 
     with custom receive connectors.
-
-     
+    
+    Special thanks to Rhoderick Milne [MSFT] who inspired me this script. 
+    Ref : https://blog.rmilne.ca/2019/01/25/checking-exchange-smtp-logs-to-determine-usage/
+   
     
 .PARAMETER Scope
 
