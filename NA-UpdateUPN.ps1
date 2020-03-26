@@ -19,6 +19,7 @@
     Some interesting links :
     
     https://docs.microsoft.com/en-us/office365/enterprise/prepare-a-non-routable-domain-for-directory-synchronization
+    https://www.concurrency.com/blog/w/change-user-principal-names-to-match-email-address
     https://www.mustbegeek.com/change-upn-of-domain-users-in-active-directory/
     https://www.petenetlive.com/KB/Article/0001238
 
