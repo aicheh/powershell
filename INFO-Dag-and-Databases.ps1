@@ -49,3 +49,6 @@ $databases | % {
 }
 
 Note : dans un DAG, il n'est pas nécessaire de démonter puis remonter les bases pour que l'enregistrement curculaire prenne effet.
+
+
+
