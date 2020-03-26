@@ -42,3 +42,10 @@ $databases | % {
       Sleep -s 10
 }
 
+# Mettre les bases de données en enregistrement circulaire
+
+$databases | % {
+      Set-MailboxDatabase -Identity $_.Name -CircularLoggingEnabled $true
+}
+
+Note : dans un DAG, il n'est pas nécessaire de démonter puis remonter les bases pour que l'enregistrement curculaire prenne effet.
