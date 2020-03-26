@@ -1,0 +1,10 @@
+Index des scripts :
+
+NA-UpdateUPN.ps1 : 
+Ce script permet de mettre à jour l'UPN de l'ensemble des utilisateurs Active Directory en le remplacant par 
+l'adresse email de l'utilisateur.
+
+NA-RCLog.ps1 : 
+Ce script permet de lire le contenu des fichiers logs des connecteurs de réception MS Exchange et de renvoyer 
+le tout sous une forme plus facilement exploitable. Super pratique pour surveiller le traffic sur smtp au niveau 
+de vos connecteurs de reception, en particulier lorsque l'on doit créer des connecteurs personnalisés.
