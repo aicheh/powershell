@@ -65,7 +65,7 @@ $output = @()
 
 foreach ($file in $files) {
 
-   $content = ($file | Get-Content -Readcount 1000 | Select-Object -Skip 5)
+   $content = ($file | Get-Content | Select-Object -Skip 5)
 
    foreach ( $line in $content ) {
 
