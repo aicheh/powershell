@@ -70,13 +70,9 @@ foreach ($file in $files) {
    foreach ( $line in $content ) {
 
       $parseline = $line.split(",")  
-      $skip = $true
+      $skip = $false
 
-      if (!($Filter)) {
-      
-         $skip = $false
-
-      } elseif ($parseline -match $Filter) { $skip = $false }
+      if ($Filter) { if (!($parseline -match $Filter)) { $skip = $true } }
       
       if (!($skip)) {
 
