@@ -39,7 +39,7 @@
 
    .\NA-RCLog.ps1 -Scope LogFilesOfTheDay | ?{ $.Connector -match "EXCHANGE\Default Frontend"} | Out-GridView   # Same thing in a different way
 
-   .\NA-RCLog.ps1 -Scope LogFilesOfTheWeek | select Client | Select -Unique   # print a list of unique client ip connecting to your server the last week
+   .\NA-RCLog.ps1 -Scope LogFilesOfTheWeek | select Client -Unique   # print a list of unique client ip connecting to your server the last week
 
 #>
 
@@ -65,7 +65,7 @@ $output = @()
 
 foreach ($file in $files) {
 
-   $content = ($file | Get-Content | Select-Object -Skip 5)
+   $content = ($file | Get-Content -Readcount 1000 | Select-Object -Skip 5)
 
    foreach ( $line in $content ) {
 
