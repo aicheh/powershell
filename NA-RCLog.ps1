@@ -1,4 +1,3 @@
-
 <# 
 
 .SYNOPSIS
@@ -6,18 +5,25 @@
     NA-RCLog
 
     Abdelhamid Aiche / aicheh@gmail.com
-    Version 1.0, March 26th, 2020
+    Version 1.01, March 30th, 2020
 
-    Script is intended to query MS Exchange2013/2016 receive connectors log files data and present them in a more usable format.
+    Script is intended to query MS Exchange 2013/2016 receive connectors log files data and present them in a more usable format.
 
     Log files are stored by default in %ExchangeInstallPath%TransportRoles\Logs\FrontEnd\ProtocolLog\SmtpReceive\*.log folder.
 
+    You can also get the path using : Get-FrontendTransportService -Identity SERVERNAME | Select ReceiveProtocolLogPath
+
     Very helpfull if you want to track a specific receive connector activity for example, specially when you deal 
     with custom receive connectors.
-    
-    Special thanks to Rhoderick Milne [MSFT] who inspired me this script. 
-    Ref : https://blog.rmilne.ca/2019/01/25/checking-exchange-smtp-logs-to-determine-usage/
-   
+
+
+.REVISIONS
+
+    1.0     Initial release
+    1.01    Some changes with performance in mind :
+            Replace Get-Content with System.IO.StreamReader.
+            Replace $output variable of type Array by an ArrayList. 
+     
     
 .PARAMETER Scope
 
@@ -50,7 +56,8 @@ param(
 	)
 
 $ExchangeInstallPath = $env:ExchangeInstallPath
-$Path = "$($ExchangeInstallPath)TransportRoles\Logs\FrontEnd\ProtocolLog\SmtpReceive\*.log"
+
+$path = "$($ExchangeInstallPath)TransportRoles\Logs\FrontEnd\ProtocolLog\SmtpReceive\*.log"
 
 $files = Get-ChildItem $path | Sort-Object CreationTime -Descending
 
@@ -61,19 +68,24 @@ switch ($scope)
       "LogFilesOfTheWeek"  { $files = $files | ? { $_.CreationTime -gt (Get-Date).AddDays(-6) } }
     }
 
-$output = @()
+$output  = [System.Collections.ArrayList]@()
 
 foreach ($file in $files) {
 
    $content = ($file | Get-Content | Select-Object -Skip 5)
 
-   foreach ( $line in $content ) {
+   $stream = [System.IO.StreamReader]::new($file.FullName)
+
+   $i = 0
+   
+   while ($line = $stream.ReadLine()) {
 
       $parseline = $line.split(",")  
       $skip = $false
-
-      if ($Filter) { if (!($parseline -match $Filter)) { $skip = $true } }
       
+      if ($i -lt 5) { $skip = $true }
+      if (($Filter) -and ($skip -eq $false)) { if (!($parseline -match $Filter)) { $skip = $true } }
+           
       if (!($skip)) {
 
          $item = New-Object PSObject -Property @{
@@ -86,11 +98,15 @@ foreach ($file in $files) {
                    Data       = $parseline[7]
                  }
 
-         $output +=$item
+         $null = $output.Add($item)
    
       }
 
+      $i++
+
    }
+
+   $stream.Dispose()
 
 }
 
