@@ -82,7 +82,7 @@ foreach ($file in $files) {
         $parseline = $line.split(",")  
         $skip = $false
       
-        if ($filter) { if ($parseline -notmatch $filter) { $skip = $true } }
+        if ($filter) { if (!($parseline -match $filter)) { $skip = $true } }
            
         if (!$skip) {
 
