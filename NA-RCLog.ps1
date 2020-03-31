@@ -1,3 +1,4 @@
+
 <# 
 
 .SYNOPSIS
@@ -20,9 +21,9 @@
 .REVISIONS
 
     1.0     Initial release
-    1.01    Some changes with performance in mind :
-            Replace Get-Content with System.IO.StreamReader.
-            Replace $output variable of type Array by an ArrayList. 
+    1.01    Some minor changes with performance in mind :
+            Replaced $output variable of type Array by an ArrayList. 
+               
      
     
 .PARAMETER Scope
@@ -72,41 +73,34 @@ $output  = [System.Collections.ArrayList]@()
 
 foreach ($file in $files) {
 
-   $content = ($file | Get-Content | Select-Object -Skip 5)
+    $content = ($file | Get-Content | Select-Object -Skip 5)
 
-   $stream = [System.IO.StreamReader]::new($file.FullName)
-
-   $i = 0
+    $i = 0
    
-   while ($line = $stream.ReadLine()) {
-
-      $parseline = $line.split(",")  
-      $skip = $false
+    foreach ($line in $content) {
+   
+        $parseline = $line.split(",")  
+        $skip = $false
       
-      if ($i -lt 5) { $skip = $true }
-      if (($Filter) -and ($skip -eq $false)) { if (!($parseline -match $Filter)) { $skip = $true } }
+        if ($filter) { if ($parseline -notmatch $filter) { $skip = $true } }
            
-      if (!($skip)) {
+        if (!$skip) {
 
-         $item = New-Object PSObject -Property @{
-                   Log        = $file.Name
-                   Date       = $parseline[0].split("T")[0]
-                   Time       = $parseline[0].split("T")[1].split(".")[0]
-                   Connector  = $parseline[1]
-                   Client     = $parseline[5].split(":")[0]
-                   Server     = $parseline[4].split(":")[0]
-                   Data       = $parseline[7]
-                 }
+            $item = New-Object PSObject -Property @{
+                    Log        = $file.Name
+                    Date       = $parseline[0].split("T")[0]
+                    Time       = $parseline[0].split("T")[1].split(".")[0]
+                    Connector  = $parseline[1]
+                    Client     = $parseline[5].split(":")[0]
+                    Server     = $parseline[4].split(":")[0]
+                    Data       = $parseline[7]
+                    }
 
-         $null = $output.Add($item)
+            $null = $output.Add($item)
    
-      }
+        }
 
-      $i++
-
-   }
-
-   $stream.Dispose()
+    }
 
 }
 
