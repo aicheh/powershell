@@ -74,8 +74,6 @@ $output  = [System.Collections.ArrayList]@()
 foreach ($file in $files) {
 
     $content = ($file | Get-Content | Select-Object -Skip 5)
-
-    $i = 0
    
     foreach ($line in $content) {
    
