@@ -7,7 +7,9 @@
 
  Version 1.1 - Last modified : 06/27/2020 22:25
 
- Credit to Glen Scales : https://gsexdev.blogspot.com/2006/09/doing-smtp-telnet-test-with-powershell.html
+ Credit to : 
+     Glen Scales : https://gsexdev.blogspot.com/2006/09/doing-smtp-telnet-test-with-powershell.html
+     Mario van Antwerpen : https://get-note.net/2019/01/18/use-powershell-to-find-ip-geolocation/
 
 
  .SYNOPSIS
