@@ -1,19 +1,30 @@
 <# 
 
+ SmtpDiag.ps1
+ 
+ Author: Abdelhamid Aiche
+         aicheh@gmail.com
+
+ Version 1.1 - Last modified : 06/27/2020 22:25
+
  .SYNOPSIS
 
-     SmtpDiag.ps1
-     
-     Abdelhamid Aiche / aicheh@gmail.com
-     Version 1.0. Last update June 27th, 2020
+     Analyze MX records.
+
+.DESCRIPTION
 
      Script is intended to analyze MX records for the specified domain.
      It will gather MX hostnames, corresponding ip address, ping each ip and
-     check if smtp port is open.    
-
+     check if smtp port is open. It also retrieve geo ip information and 
+     the server response when possible.
+ 
  .PARAMETER Domain
     
     Specify the domain to analyze
+
+ .EXAMPLE
+      
+      .\smtpdiag.ps1 -domain ibm.com      
 
 #>
 
@@ -42,6 +53,34 @@ function TestPort($hostname, $port)
     return $tcpClient.ConnectAsync($hostname, $port).Wait(1000)
 }
 
+function ReadServerResponse {
+
+    $result = ""
+    
+    while($stream.DataAvailable)
+    {
+        $read = $stream.Read($buffer, 0, 1024)
+        $result+= ($encoding.GetString($buffer, 0, $read))       
+    }
+
+    return $result
+}
+
+function ReadServerGreetings($hostname) {
+
+    $socket = new-object System.Net.Sockets.TcpClient($hostname, 25)
+    if($socket -eq $null) { return; }
+
+    $stream = $socket.GetStream()
+    $writer = new-object System.IO.StreamWriter($stream)
+    $buffer = new-object System.Byte[] 1024
+    $encoding = new-object System.Text.AsciiEncoding
+    $command = "HELO no-reply.com" #+ $domain
+    $writer.WriteLine($command)
+    $writer.Flush()
+    start-sleep -m 500
+    ReadServerResponse($stream)
+}
 
 
 $ErrorActionPreference   = "SilentlyContinue"
@@ -72,18 +111,21 @@ $mx | %{
                     IpAddress  = $ip
                     TTL        = FormatTTL $_.TTL 
                     Ping       = "Success"
-                    Status     = "Success" 
-                    Info       = "SMTP port is open." 
+                    Status     = "SMTP port is open."
                     Network    = ""
+                    Response  = ""
                     }
     
     if (!$ping) { $item.Ping = "Request timed out"}
-    if (!$tcp)  { $item.Status = "Connection failed" ; $item.Info = "SMTP port is closed/filtered." } 
-    if ($geo)   { $item.Network = "{0}/{1}" -f $geo.as, $geo.country}
+    if (!$tcp)  { $item.Status = "SMTP port is closed/filtered." } 
+    if ($geo)   { $item.Network = "{0}/{1}" -f $geo.as, $geo.country} 
+    if ($tcp)   { $item.Response = (ReadServerGreetings $ip) }
  
     $output+=$item    
    
 }
 
-$output | Sort Preference | Select Domain, Type, Hostname, IPAddress, Network, Preference, TTL, Ping, Status, Info
+
+
+$output | Sort Preference | Select Domain, Type, Hostname, IPAddress, Network, Preference, TTL, Ping, Status, Response
 
