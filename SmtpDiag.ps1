@@ -113,7 +113,7 @@ $mx | %{
                     Ping       = "Success"
                     Status     = "SMTP port is open."
                     Network    = ""
-                    Response  = ""
+                    Response   = ""
                     }
     
     if (!$ping) { $item.Ping = "Request timed out"}
