@@ -7,6 +7,9 @@
 
  Version 1.1 - Last modified : 06/27/2020 22:25
 
+ Credit to Glen Scales : https://gsexdev.blogspot.com/2006/09/doing-smtp-telnet-test-with-powershell.html
+
+
  .SYNOPSIS
 
      Analyze MX records.
@@ -126,6 +129,4 @@ $mx | %{
 }
 
 
-
 $output | Sort Preference | Select Domain, Type, Hostname, IPAddress, Network, Preference, TTL, Ping, Status, Response
-
